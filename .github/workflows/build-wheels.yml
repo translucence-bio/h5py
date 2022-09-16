@@ -9,6 +9,9 @@ on:
     - master
   workflow_dispatch: {}
 
+env:
+  HDF5_VERSION: 1.12.2
+
 jobs:
   build-wheels-windows:
     name: Build Wheels (Windows)

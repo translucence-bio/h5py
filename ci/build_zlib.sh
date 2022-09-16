@@ -1,12 +1,13 @@
 # Build zlib-ng on unix (not tested on MacOS)
+set -e
 
-if [ -z "${HDF_DIR+x}" ]; then
+if [ -z "$HDF5_DIR" ]; then
   echo "HDF5_DIR must be defined."
   exit 1
 fi
 
-if [ -z "${ZLIB_NG_VERSION}" ]; then
-  $ZLIB_NG_VERSION = "2.0.6"
+if [ -z "$ZLIB_NG_VERSION" ]; then
+  ZLIB_NG_VERSION="2.0.6"
 fi
 
 pushd /tmp
