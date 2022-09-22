@@ -11,15 +11,29 @@ on:
 
 env:
   HDF5_VERSION: 1.12.2
+  CIBW_BUILD: cp310-*
+  CIBW_ARCHS: native
+  CIBW_ENVIRONMENT_WINDOWS: ZLIB_ROOT="$HOMEPATH\\zlib-ng-install HDF5_DIR="$HOMEPATH\\hdf5-install"
+  CIBW_ENVIRONMENT_LINUX: HDF5_DIR="$HOME/hdf5-install" LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$LD_LIBRARY_PATH"
+  CIBW_ENVIRONMENT_PASS_LINUX: HDF5_VERSION
+  CIBW_BEFORE_ALL_WINDOWS: |
+    powershell ci\\get_zlib_win.ps1 &&
+    python ci\\get_hdf5_win.py
+  CIBW_BEFORE_ALL_LINUX: |
+    yum install wget -y &&
+    ci/build_zlib.sh &&
+    ci/get_hdf5_if_needed.sh
 
 jobs:
-  build-wheels-windows:
-    name: Build Wheels (Windows)
-    runs-on: [self-hosted, windows-10]
+  build-wheels:
+    name: Build Wheels
+    strategy:
+      matrix:
+        os:
+        - [self-hosted, ubuntu-20.04]
+        - [self-hosted, windows-10]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Environment setup
-        run: echo "ZLIB_ROOT=${{ env.HOMEPATH }}\zlib-ng-install" >> $GITHUB_ENV
-
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -32,18 +46,16 @@ jobs:
         run: |
           python3 -m pip install cibuildwheel==2.3.1 requests
 
-      - name: Display environment
+      - name: "Windows: Display environment"
+        if: runner.os == 'Windows'
         run: "ls env:"
 
-      - name: "Get zlib-ng"
-        run: ci/get_zlib_win.ps1
+      - name: "Unix: Display environment"
+        if: runner.os != 'Windows'
+        run: env
 
-      # TODO - Setup bash by default on Windows runners
-      - name: "Add bash.exe to path"
-        if: always() && runner.os == 'Windows'
-        run: echo "C:\Program Files\Git\bin" >> $GITHUB_PATH
-
-      - name: Build wheels
+      - name: Build wheel
+        shell: bash
         run: |
           set -o errexit
           cibuildwheel --print-build-identifiers
@@ -53,49 +65,6 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v3
         with:
-          name: wheel-windows
+          name: ${{ runner.os }}_wheels
           path: wheelhouse
-
-  build-wheels-linux:
-    name: Build Wheels (Linux)
-    runs-on: [self-hosted, ubuntu-20.04]
-    steps:
-      - name: Environment setup
-        run: |
-          mkdir $HOME/hdf5-install
-          echo "HDF5_DIR=${{ env.HOME }}/hdf5-install" >> $GITHUB_ENV
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10.4"
-
-      - name: Install Python dependencies
-        run: |
-          python3 -m pip install cibuildwheel==2.3.1
-
-      - name: Display environment
-        run: env
-
-      - name: Build zlib-ng
-        run: ci/build_zlib.sh
-
-      - name: Build HDF5
-        run: ci/get_hdf5_if_needed.sh
-
-      - name: Build wheel
-        bash: |
-          set -o errexit
-          cibuildwheel --print-build-identifiers
-          cibuildwheel --output-dir wheelhouse .
-
-      - name: Upload wheel
-        uses: actions/upload-artifact@v3
-        with:
-          name: wheel-linux
-          path: wheelhouse
-
 

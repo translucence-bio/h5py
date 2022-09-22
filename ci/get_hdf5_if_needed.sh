@@ -26,7 +26,7 @@ else
         # Test with the direct file driver on Linux. This setting does not
         # affect the HDF5 bundled in Linux wheels - that is built into a Docker
         # image from a separate repository.
-        ENABLE_DIRECT_VFD="--enable-direct-vfd"
+        #ENABLE_DIRECT_VFD="--enable-direct-vfd"
     fi
 
     if [ -f $HDF5_DIR/lib/$lib_name ]; then
