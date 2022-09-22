@@ -10,7 +10,6 @@ Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/zlib-ng/zlib-ng/rele
 Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/$($filename).zip", "$Env:ZLIB_ROOT")
 
 # Wheels build script expects a "_release" suffix
-Rename-Item -Path "$($Env:ZLIB_ROOT)\bin\zlib1.dll" -NewName "zlib.dll"
 Rename-Item -Path "$($Env:ZLIB_ROOT)\bin" -NewName "bin_release"
 Rename-Item -Path "$($Env:ZLIB_ROOT)\lib" -NewName "lib_release"
 
