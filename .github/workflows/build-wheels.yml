@@ -22,9 +22,8 @@ env:
     powershell ci\\get_zlib_win.ps1 &&
     python ci\\get_hdf5_win.py
   CIBW_BEFORE_ALL_LINUX: |
-    yum install wget -y &&
     ci/build_zlib.sh &&
-    ci/get_hdf5_if_needed.sh
+    ci/get_hdf5_if_needed.sh &&
     patchelf --set-rpath $HDF5_DIR/lib/libhdf5.so
   CIBW_REPAIR_WHEEL_COMMAND_LINUX: |
     python -c 'import sys, json;
