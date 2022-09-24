@@ -12,6 +12,3 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression
 # Wheels build script expects a "_release" suffix
 Rename-Item -Path "$($Env:ZLIB_ROOT)\bin" -NewName "bin_release"
 Rename-Item -Path "$($Env:ZLIB_ROOT)\lib" -NewName "lib_release"
-
-# Wheels build scrip expects "zlib.dll"
-#New-Item -ItemType SymbolicLink -Path "$($Env:ZLIB_ROOT)\bin_release\zlib.dll" -Target "$($Env:ZLIB_ROOT)\bin_release\zlib1.dll"

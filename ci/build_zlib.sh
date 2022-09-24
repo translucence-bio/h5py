@@ -11,7 +11,7 @@ if [ -z "$ZLIB_NG_VERSION" ]; then
 fi
 
 pushd /tmp
-wget "https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${ZLIB_NG_VERSION}.zip"
+curl -fsSLO "https://github.com/zlib-ng/zlib-ng/archive/refs/tags/${ZLIB_NG_VERSION}.zip"
 unzip "${ZLIB_NG_VERSION}.zip"
 mkdir zlib-ng-build
 cmake "-DZLIB_COMPAT:BOOL=ON" "-DCMAKE_INSTALL_PREFIX:PATH=$HDF5_DIR" -S "zlib-ng-${ZLIB_NG_VERSION}" -B zlib-ng-build

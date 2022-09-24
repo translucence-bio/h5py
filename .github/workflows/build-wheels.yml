@@ -3,18 +3,20 @@ name: Build wheels for all platforms
 on:
   push:
     branches:
-    - feat/zlib-ng
-  pull_request:
-    branches:
-    - master
+    - zlib-ng
   workflow_dispatch: {}
 
 env:
+  AWS_ACCOUNT: "506429657129"
+  AWS_REGION: us-west-2
+  AWS_DOMAIN: production
+  AWS_REPOSITORY: pypi
+  AWS_ROLE: PublishToRepo-production-pypi-translucence-bio-h5py
   HDF5_VERSION: 1.12.2
   CIBW_BUILD: cp310-*
   CIBW_ARCHS: native
   CIBW_ENVIRONMENT_WINDOWS: ZLIB_ROOT="$HOMEPATH\\zlib-ng-install HDF5_DIR="$HOMEPATH\\hdf5-install"
-  CIBW_ENVIRONMENT_LINUX: HDF5_DIR="$HOME/hdf5-install" LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$LD_LIBRARY_PATH"
+  CIBW_ENVIRONMENT_LINUX: HDF5_DIR="$HOME/hdf5-install" LD_FLAGS="-L$HOME/hdf5-install/lib" LD_LIBRARY_PATH="$HOME/hdf5-install/lib"
   CIBW_ENVIRONMENT_PASS_LINUX: HDF5_VERSION
   CIBW_BEFORE_ALL_WINDOWS: |
     powershell ci\\get_zlib_win.ps1 &&
@@ -23,10 +25,18 @@ env:
     yum install wget -y &&
     ci/build_zlib.sh &&
     ci/get_hdf5_if_needed.sh
+  CIBW_REPAIR_WHEEL_COMMAND_LINUX: |
+    python -c 'import sys, json;
+    from auditwheel import policy, main;
+    policy._POLICIES = json.loads(json.dumps(policy._POLICIES, separators=(",", ":")).replace(",\"libz.so.1\"", ""));
+    sys.argv = ["_", "repair", "-w", "{dest_dir}", "{wheel}"];
+    main.main()'
 
 jobs:
   build-wheels:
     name: Build Wheels
+    permissions:
+      id-token: write
     strategy:
       matrix:
         os:
@@ -37,14 +47,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/${{ env.AWS_ROLE }}
+          role-session-name: h5py-build-${{ runner.os }}
+          aws-region: ${{ env.AWS_REGION }}
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: "3.10.4"
 
       - name: Install Python dependencies
-        run: |
-          python3 -m pip install cibuildwheel==2.3.1 requests
+        run: python3 -m pip install twine cibuildwheel==2.3.1 requests
 
       - name: "Windows: Display environment"
         if: runner.os == 'Windows'
@@ -62,9 +78,7 @@ jobs:
           cibuildwheel --output-dir wheelhouse .
           python ci/bundle_hdf5_whl.py wheelhouse
 
-      - name: Upload wheel
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ runner.os }}_wheels
-          path: wheelhouse
-
+      - name: Publish
+        run: |
+          aws codeartifact login --tool twine --domain ${{ env.AWS_DOMAIN }} --repository ${{ env.AWS_REPOSITORY }} &&
+          twine upload --repository codeartifact wheelhouse/h5py-*
