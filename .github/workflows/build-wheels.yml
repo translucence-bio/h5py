@@ -24,6 +24,10 @@ env:
     ci/build_zlib.sh &&
     ci/get_hdf5_if_needed.sh &&
     patchelf --set-rpath $HDF5_DIR/lib $HDF5_DIR/lib/libhdf5.so
+
+  # Hack to exclude zlib from whitelist in auditwheel
+  CIBW_BEFORE_BUILD_LINUX: |
+    python -m pip install auditwheel
   CIBW_REPAIR_WHEEL_COMMAND_LINUX: |
     python -c 'import sys, json;
     from auditwheel import policy, main;
