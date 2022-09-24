@@ -15,12 +15,11 @@ env:
   HDF5_VERSION: 1.12.2
   CIBW_BUILD: cp310-*
   CIBW_ARCHS: native
-  CIBW_ENVIRONMENT_WINDOWS: ZLIB_ROOT="$HOMEPATH\\zlib-ng-install" HDF5_DIR="$HOMEPATH\\hdf5-install"
+  CIBW_ENVIRONMENT_WINDOWS: ZLIB_ROOT="$HOMEPATH\zlib-ng-install" HDF5_DIR="$HOMEPATH\hdf5-install"
   CIBW_ENVIRONMENT_LINUX: HDF5_DIR="$HOME/hdf5-install" LD_FLAGS="-L$HOME/hdf5-install/lib" LD_LIBRARY_PATH="$HOME/hdf5-install/lib"
   CIBW_ENVIRONMENT_PASS_LINUX: HDF5_VERSION
   CIBW_BEFORE_ALL_WINDOWS: |
-    powershell ci\\get_zlib_win.ps1 &&
-    python ci\\get_hdf5_win.py
+    powershell -command "ci\get_zlib_win.ps1; python ci\get_hdf5_win.py"
   CIBW_BEFORE_ALL_LINUX: |
     ci/build_zlib.sh &&
     ci/get_hdf5_if_needed.sh &&
