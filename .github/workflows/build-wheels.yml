@@ -25,6 +25,7 @@ env:
     yum install wget -y &&
     ci/build_zlib.sh &&
     ci/get_hdf5_if_needed.sh
+    patchelf --set-rpath $HDF5_DIR/lib/libhdf5.so
   CIBW_REPAIR_WHEEL_COMMAND_LINUX: |
     python -c 'import sys, json;
     from auditwheel import policy, main;
