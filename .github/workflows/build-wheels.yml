@@ -14,6 +14,7 @@ env:
   AWS_ROLE: PublishToRepo-production-pypi-translucence-bio-h5py
   HDF5_VERSION: 1.12.2
   CIBW_BUILD: cp310-*
+  CIBW_SKIP: "*musllinux*"
   CIBW_ARCHS: native
   CIBW_ENVIRONMENT_WINDOWS: ZLIB_ROOT="$HOMEPATH\zlib-ng-install" HDF5_DIR="$HOMEPATH\hdf5-install"
   CIBW_ENVIRONMENT_LINUX: HDF5_DIR="$HOME/hdf5-install" LD_FLAGS="-L$HOME/hdf5-install/lib" LD_LIBRARY_PATH="$HOME/hdf5-install/lib"
