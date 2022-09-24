@@ -41,8 +41,8 @@ jobs:
     strategy:
       matrix:
         os:
-        - [self-hosted, ubuntu-20.04]
-        - [self-hosted, windows-10]
+        - ubuntu-latest
+        - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
