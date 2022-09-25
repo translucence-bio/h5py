@@ -20,7 +20,7 @@ env:
   CIBW_ENVIRONMENT_LINUX: HDF5_DIR="$HOME/hdf5-install" LD_FLAGS="-L$HOME/hdf5-install/lib" LD_LIBRARY_PATH="$HOME/hdf5-install/lib"
   CIBW_ENVIRONMENT_PASS_LINUX: HDF5_VERSION
   CIBW_BEFORE_ALL_WINDOWS: |
-    powershell -command "ci\get_zlib_win.ps1; python ci\get_hdf5_win.py"
+    pwsh -command ". ci\get_zlib_win.ps1 && python ci\get_hdf5_win.py"
   CIBW_BEFORE_ALL_LINUX: |
     ci/build_zlib.sh &&
     ci/get_hdf5_if_needed.sh &&
