@@ -66,13 +66,13 @@ jobs:
       - name: Install Python dependencies
         run: python3 -m pip install twine cibuildwheel==2.3.1 requests
 
-      - name: "Windows: Display environment"
-        if: runner.os == 'Windows'
-        run: "ls env:"
+      # - name: "Windows: Display environment"
+      #   if: runner.os == 'Windows'
+      #   run: "ls env:"
 
-      - name: "Unix: Display environment"
-        if: runner.os != 'Windows'
-        run: env
+      # - name: "Unix: Display environment"
+      #   if: runner.os != 'Windows'
+      #   run: env
 
       - name: Build wheel
         shell: bash
@@ -83,6 +83,7 @@ jobs:
           python ci/bundle_hdf5_whl.py wheelhouse
 
       - name: Publish
+        continue-on-error: true
         run: |
           aws codeartifact login --tool twine --domain ${{ env.AWS_DOMAIN }} --repository ${{ env.AWS_REPOSITORY }} &&
           twine upload --repository codeartifact wheelhouse/h5py-*
