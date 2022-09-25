@@ -25,7 +25,8 @@ env:
     ci/build_zlib.sh &&
     ci/get_hdf5_if_needed.sh &&
     patchelf --set-rpath $HDF5_DIR/lib $HDF5_DIR/lib/libhdf5.so
-  CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: python ci/bundle_hdf5_whl.py $(Split-Path {wheel})
+  CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: |
+    pwsh -command ". Copy-Item {wheel} {dest_dir} && python ci/bundle_hdf5_whl.py {dest_dir}"
 
   # Hack to exclude zlib from whitelist in auditwheel
   CIBW_BEFORE_BUILD_LINUX: |
