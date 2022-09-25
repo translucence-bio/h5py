@@ -11,7 +11,7 @@ env:
   AWS_REGION: us-west-2
   AWS_DOMAIN: production
   AWS_REPOSITORY: pypi
-  AWS_ROLE: PublishToRepo-production-pypi-translucence-bio-h5py
+  AWS_ROLE: GitHubPublish-production-all-translucence-bio-h5py
   HDF5_VERSION: 1.12.2
   CIBW_BUILD: cp310-*
   CIBW_SKIP: "*musllinux*"
