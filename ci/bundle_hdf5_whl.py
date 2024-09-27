@@ -21,7 +21,7 @@ def find_dlls():
     zlib_root = os.environ.get("ZLIB_ROOT")
     if zlib_root:
         print("ZLIB_ROOT", zlib_root)
-        yield os.path.join(zlib_root, 'bin_release', 'zlib.dll')
+        yield from glob(os.path.join(zlib_root, 'bin_release', 'zlib*.dll'))
 
 def file_sha256(path):
     h = hashlib.sha256()
