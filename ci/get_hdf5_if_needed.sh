@@ -47,23 +47,9 @@ else
             BUILD_MODE="--enable-build-mode=production"
         fi
 
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            ARCH=$(uname -m)
-            ZLIB_VERSION="1.2.13"
-
-            pushd /tmp
-            curl -sLO https://zlib.net/fossils/zlib-$ZLIB_VERSION.tar.gz
-            tar xzf zlib-$ZLIB_VERSION.tar.gz
-            cd zlib-$ZLIB_VERSION
-            ./configure --prefix="$HDF5_DIR"
-            make
-            make install
-            popd
-
-            export LD_LIBRARY_PATH="$HDF5_DIR/lib:${LD_LIBRARY_PATH}"
-            export PKG_CONFIG_PATH="$HDF5_DIR/lib/pkgconfig:${PKG_CONFIG_PATH}"
-            ZLIB_ARG="--with-zlib=$HDF5_DIR"
-        fi
+        export LD_LIBRARY_PATH="$HDF5_DIR/lib:${LD_LIBRARY_PATH}"
+        export PKG_CONFIG_PATH="$HDF5_DIR/lib/pkgconfig:${PKG_CONFIG_PATH}"
+        ZLIB_ARG="--with-zlib=$HDF5_DIR"
 
         pushd /tmp
         url_base="https://github.com/HDFGroup/hdf5/archive/refs/tags/"

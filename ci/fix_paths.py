@@ -24,7 +24,7 @@ def main():
 
         zlib_root = os.environ.get("ZLIB_ROOT")
         if zlib_root:
-            f = pjoin(zlib_root, 'bin_release', 'zlib.dll')
+            f, = glob(pjoin(zlib_root, 'bin_release', 'zlib*.dll'))
             copy(f, pjoin(sitepackagesdir, 'h5py', 'zlib.dll'))
             print("Copied", f)
 
